@@ -1,8 +1,0 @@
-{"event": "step_start", "step_id": "s0", "action": "navigate", "ts": "2026-08-16T15:56:26.248346+00:00"}
-{"event": "step_ok", "step_id": "s0", "ts": "2026-08-16T15:56:26.352418+00:00"}
-{"event": "step_start", "step_id": "s1", "action": "fill", "ts": "2026-08-16T15:56:26.352583+00:00"}
-{"event": "step_ok", "step_id": "s1", "ts": "2026-08-16T15:56:26.432563+00:00"}
-{"event": "step_start", "step_id": "s2", "action": "click", "ts": "2026-08-16T15:56:26.432738+00:00"}
-{"event": "step_ok", "step_id": "s2", "ts": "2026-08-16T15:56:26.494690+00:00"}
-{"event": "step_start", "step_id": "s3", "action": "extract", "ts": "2026-08-16T15:56:26.494849+00:00"}
-{"event": "step_ok", "step_id": "s3", "ts": "2026-08-16T15:56:32.515685+00:00"}
