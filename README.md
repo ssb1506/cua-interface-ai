@@ -101,7 +101,7 @@ PYTHONPATH=. python -m pytest tests/ -v
 app/server.py              mock legacy target application
 agent/schema.py            the Capability artifact contract
 agent/perception.py        accessibility-tree observation layer
-agent/llm_client.py        Gemini client (default, free tier) with an Anthropic fallback; forced tool/function-call action schema
+agent/llm_client.py        Gemini client (default) with an Anthropic fallback; forced tool/function-call action schema
 agent/discovery.py         LLM-driven observe-decide-act loop -> artifact
 agent/replay.py            deterministic replay engine, no LLM
 agent/safety.py            allowlist, risk classification, redaction
