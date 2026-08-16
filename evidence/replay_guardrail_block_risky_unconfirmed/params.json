@@ -1,0 +1,9 @@
+{
+  "artifact": "artifacts/open_subaccount.json",
+  "params": {
+    "member_id": "67890",
+    "account_type": "CHECKING",
+    "initial_deposit": "10"
+  },
+  "allow_risky": false
+}

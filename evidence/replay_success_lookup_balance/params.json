@@ -1,0 +1,7 @@
+{
+  "artifact": "artifacts/lookup_savings_balance.json",
+  "params": {
+    "member_id": "12345"
+  },
+  "allow_risky": false
+}

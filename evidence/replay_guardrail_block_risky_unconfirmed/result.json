@@ -1,0 +1,12 @@
+{
+  "status": "failure",
+  "outputs": {},
+  "business_outcome": null,
+  "error": {
+    "step": "s3",
+    "kind": "guardrail_block",
+    "expected": "risky step pre-approved or confirmed",
+    "observed": "risky action on '/subaccount/create' requires human confirmation (allow_risky=False)"
+  },
+  "run_id": "replay-4b52782e"
+}

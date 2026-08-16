@@ -1,0 +1,9 @@
+{
+  "status": "success",
+  "outputs": {
+    "confirmation_text": "New Money Market sub-account 233533 opened for member 67890 with initial deposit $100."
+  },
+  "business_outcome": null,
+  "error": null,
+  "run_id": "replay-799bf489"
+}

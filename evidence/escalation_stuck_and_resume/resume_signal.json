@@ -1,0 +1,17 @@
+{
+  "handed_back": true,
+  "actions_taken": [
+    {
+      "action": "fill",
+      "role": "textbox",
+      "name": "",
+      "value": "[operator-entered]"
+    },
+    {
+      "action": "click",
+      "role": "button",
+      "name": "Search"
+    }
+  ],
+  "final_url": "http://localhost:5055/member/67890"
+}

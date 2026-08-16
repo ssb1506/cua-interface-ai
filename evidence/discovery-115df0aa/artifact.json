@@ -1,0 +1,138 @@
+{
+  "capability_id": "lookup_savings_balance",
+  "version": "1.0.0",
+  "description": "Look up member 12345 and read their current savings balance.",
+  "target": {
+    "allowed_domains": [
+      "localhost:5055",
+      "127.0.0.1:5055"
+    ],
+    "app": "coreserv-legacy"
+  },
+  "input_params": [
+    {
+      "name": "member_id",
+      "type": "string",
+      "required": true,
+      "description": "Member ID to look up"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "savings_balance",
+      "type": "string",
+      "description": "Current savings balance"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "s0",
+      "action": "navigate",
+      "risk": "safe",
+      "locator": [],
+      "value_ref": null,
+      "literal_value": "http://localhost:5055/",
+      "checkpoint": null,
+      "extract_as": null,
+      "notes": null
+    },
+    {
+      "step_id": "s1",
+      "action": "fill",
+      "risk": "safe",
+      "locator": [
+        {
+          "kind": "role_name",
+          "value": "",
+          "role": "textbox",
+          "brittle": false
+        },
+        {
+          "kind": "text",
+          "value": "",
+          "role": null,
+          "brittle": false
+        }
+      ],
+      "value_ref": "member_id",
+      "literal_value": null,
+      "checkpoint": null,
+      "extract_as": null,
+      "notes": null
+    },
+    {
+      "step_id": "s2",
+      "action": "click",
+      "risk": "safe",
+      "locator": [
+        {
+          "kind": "role_name",
+          "value": "Search",
+          "role": "button",
+          "brittle": false
+        },
+        {
+          "kind": "text",
+          "value": "Search",
+          "role": null,
+          "brittle": false
+        }
+      ],
+      "value_ref": null,
+      "literal_value": null,
+      "checkpoint": {
+        "description": "url changes or content updates after clicking 'Search'",
+        "locator": null,
+        "expect": "visible",
+        "expect_value": null
+      },
+      "extract_as": null,
+      "notes": null
+    },
+    {
+      "step_id": "s3",
+      "action": "extract",
+      "risk": "safe",
+      "locator": [
+        {
+          "kind": "role_name",
+          "value": "$4,213.55",
+          "role": "text",
+          "brittle": false
+        },
+        {
+          "kind": "text",
+          "value": "$4,213.55",
+          "role": null,
+          "brittle": false
+        }
+      ],
+      "value_ref": null,
+      "literal_value": null,
+      "checkpoint": null,
+      "extract_as": "savings_balance",
+      "notes": null
+    }
+  ],
+  "outcomes": [
+    {
+      "name": "success",
+      "kind": "success",
+      "description": "Reached during discovery run discovery-115df0aa",
+      "detection": {
+        "description": "see final observation",
+        "locator": null,
+        "expect": "visible",
+        "expect_value": null
+      }
+    }
+  ],
+  "approval_state": "draft",
+  "provenance": {
+    "discovery_run_id": "discovery-115df0aa",
+    "model": "see llm_client.MODEL",
+    "captured_outputs_sample": {
+      "savings_balance": "$4,213.55"
+    }
+  }
+}

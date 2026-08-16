@@ -1,0 +1,9 @@
+{
+  "requested_at": "2026-08-16T14:45:13.148128+00:00",
+  "cdp_endpoint": "http://localhost:9333",
+  "status": "resolved",
+  "capability_id": "lookup_savings_balance",
+  "goal": "look up member and read balance",
+  "reason": "simulated: agent could not decide next step (test harness)",
+  "current_url": "http://localhost:5055/"
+}

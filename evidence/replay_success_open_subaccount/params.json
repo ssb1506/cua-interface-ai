@@ -1,0 +1,9 @@
+{
+  "artifact": "artifacts/open_subaccount.json",
+  "params": {
+    "member_id": "67890",
+    "account_type": "MONEY_MARKET",
+    "initial_deposit": "100"
+  },
+  "allow_risky": true
+}

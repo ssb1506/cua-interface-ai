@@ -1,0 +1,5 @@
+{"event": "step_start", "step_id": "s0", "action": "navigate", "ts": "2026-08-16T14:47:17.622168+00:00"}
+{"event": "step_ok", "step_id": "s0", "ts": "2026-08-16T14:47:17.696268+00:00"}
+{"event": "step_start", "step_id": "s1", "action": "fill", "ts": "2026-08-16T14:47:17.696428+00:00"}
+{"event": "step_ok", "step_id": "s1", "ts": "2026-08-16T14:47:17.741363+00:00"}
+{"event": "step_start", "step_id": "s2", "action": "click", "ts": "2026-08-16T14:47:17.741496+00:00"}
