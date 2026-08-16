@@ -14,7 +14,7 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-Discovery needs a model. Default is Gemini, free tier, no card required:
+Discovery needs a model. Default is Gemini:
 ```bash
 # get a key at https://aistudio.google.com -> "Get API key" -> "Create API key"
 export GEMINI_API_KEY=...
@@ -66,7 +66,12 @@ python run_discovery.py lookup_savings_balance
 # or
 python run_discovery.py open_subaccount
 ```
-This writes a fresh `artifacts/<capability_id>.json` plus a full evidence trail — per-step observation, model decision, screenshot — under `evidence/discovery-<run_id>/`. You can replay whatever it produces the same way as step 1.
+This writes a fresh `artifacts/<capability_id>.json` plus a full evidence trail — per-step observation, model decision, screenshot — under `evidence/discovery-<run_id>/`. Replay whatever it just produced the same way as step 1:
+
+```bash
+python run_replay.py artifacts/lookup_savings_balance.json member_id=12345
+```
+That's the full loop: goal in, discovery run against the live app, artifact saved, then a deterministic replay of that exact artifact with no LLM involved.
 
 ### 3. Human escalation / handoff
 
