@@ -1,10 +1,12 @@
 # Computer-Use Automation System
 
-A small, real vertical slice of: goal → LLM-driven discovery against a live UI → saved capability artifact → deterministic replay with typed params/outputs and error handling → human escalation that takes over the live session. See `/REPORT.md` for design rationale and trade-offs, and `/evidence/README.md` for what's been actually run vs. what's pending.
+This is a vertical slice of a computer-use automation pipeline: an LLM does discovery against a live UI, saves what it learned as a reusable "capability" artifact, and that artifact can then be replayed deterministically (typed params, typed outputs, proper error handling) without touching the LLM again. If something goes wrong mid-replay, a human can take over the same live browser session rather than starting fresh.
+
+Design rationale and trade-offs are in `/REPORT.md`. `/evidence/README.md` has the honest breakdown of what's actually been run against the live app vs. what's still pending.
 
 ## Setup
 
-The only "live service" this project depends on is the mock target app (`app/server.py`) started below — it's a local Flask app with no external calls or hidden dependencies. Everything except the discovery step (replay, safety tests, escalation demo) runs fully offline against it, no internet or API access needed.
+Everything in this project runs against a mock target app (`app/server.py`) — a local Flask app, no external calls, nothing hidden. Except for the discovery step, none of this needs internet or API access.
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
@@ -12,24 +14,24 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-For the discovery run only, you need model API access. Default provider is **Gemini** (free tier, no payment method required):
+Discovery needs a model. Default is Gemini, free tier, no card required:
 ```bash
-# get a free key at https://aistudio.google.com -> "Get API key" -> "Create API key"
+# get a key at https://aistudio.google.com -> "Get API key" -> "Create API key"
 export GEMINI_API_KEY=...
 # optional: export CUA_MODEL=gemini-2.5-flash
 ```
-To use Anthropic instead (if you have Claude API credits):
+Or Anthropic, if you'd rather use Claude credits:
 ```bash
 export CUA_PROVIDER=anthropic
 export ANTHROPIC_API_KEY=sk-...
 ```
-Replay, safety tests, and the escalation demo need **no** API key - they don't invoke an LLM.
+Replay, the safety tests, and the escalation demo don't call an LLM at all, so no key needed there.
 
 ## Target application
 
-`app/server.py` is a small mock "legacy" bank back-office app (nested tables, no test IDs, no client framework) standing in for the real environment: member search → member detail with balance → open sub-account form → confirmation, plus toggleable runtime failure modes (`?simulate_perm_denied=1`, `?simulate_session_expired=1`) and organic ones (unknown member ID, invalid form input) used to exercise the error taxonomy in Section 3.3 of the brief.
+`app/server.py` is a small mock legacy bank back-office app — nested tables, no test IDs, no client framework, basically what you'd actually find in the wild. Member search, member detail with balance, an "open sub-account" form, a confirmation screen. It also has a couple of failure modes you can toggle on (`?simulate_perm_denied=1`, `?simulate_session_expired=1`) plus some that come up naturally just from bad input (unknown member ID, invalid form fields). Those are what exercise the error taxonomy described in Section 3.3 of the brief.
 
-Start it first, in its own terminal:
+Start it in its own terminal before anything else:
 ```bash
 python app/server.py
 # serves http://localhost:5055
@@ -37,44 +39,48 @@ python app/server.py
 
 ## Demo path
 
-### 1. Deterministic replay (works right now, no API key needed)
+### 1. Deterministic replay (works right now, no key needed)
 
-Two reference artifacts are already checked in under `/artifacts/` (built from a verified manual trace against the live app - see `scripts/build_reference_artifacts.py` and `evidence/README.md` for why).
+Two reference artifacts are already checked into `/artifacts/`. They were built from a verified manual trace against the live app — `scripts/build_reference_artifacts.py` does the building, and `evidence/README.md` explains why we went that route instead of relying purely on a discovery run.
 
 ```bash
 # success
 python run_replay.py artifacts/lookup_savings_balance.json member_id=12345
 
-# business outcome, not a crash
+# a business outcome, not a crash - member just doesn't exist
 python run_replay.py artifacts/lookup_savings_balance.json member_id=99999
 
-# risky action blocked without confirmation
+# risky action, blocked without confirmation
 python run_replay.py artifacts/open_subaccount.json member_id=67890 account_type=CHECKING initial_deposit=50
 
-# risky action, explicitly confirmed
+# same, explicitly confirmed
 python run_replay.py artifacts/open_subaccount.json member_id=67890 account_type=CHECKING initial_deposit=50 --allow-risky
 ```
 
-### 2. LLM-driven discovery (requires a free `GEMINI_API_KEY`, or `ANTHROPIC_API_KEY` with `CUA_PROVIDER=anthropic`)
+### 2. LLM-driven discovery
+
+Needs a `GEMINI_API_KEY` (or `ANTHROPIC_API_KEY` with `CUA_PROVIDER=anthropic`).
 
 ```bash
 python run_discovery.py lookup_savings_balance
 # or
 python run_discovery.py open_subaccount
 ```
-Produces a fresh `artifacts/<capability_id>.json` and a full evidence trail (per-step observation, model decision, screenshot) in `evidence/discovery-<run_id>/`. You can then replay that artifact exactly as in step 1.
+This writes a fresh `artifacts/<capability_id>.json` plus a full evidence trail — per-step observation, model decision, screenshot — under `evidence/discovery-<run_id>/`. You can replay whatever it produces the same way as step 1.
 
-### 3. Human escalation / handoff (no API key needed)
+### 3. Human escalation / handoff
+
+No key needed here either.
 
 ```bash
 python scripts/test_escalation.py
-# it will pause and print an evidence run dir; in a second terminal:
+# it pauses and prints an evidence run dir; open a second terminal:
 python operator_console.py evidence/<printed-run-dir>
 #   operator> fill textbox "" 12345
 #   operator> click button Search
 #   operator> resume
 ```
-This proves control transfer against the *same live session* (same CDP-attached browser/page), not a fresh one - see `evidence/README.md` for the verified before/after state.
+Same live session, same CDP-attached browser and page — this is control transfer, not spinning up a new browser and pretending it's a handoff. `evidence/README.md` has the before/after state that backs that up.
 
 ### 4. Tests
 
@@ -82,7 +88,7 @@ This proves control transfer against the *same live session* (same CDP-attached 
 python app/server.py &      # tests replay against the live app
 PYTHONPATH=. python -m pytest tests/ -v
 ```
-14 tests: safety guardrails, artifact schema validation, and live replay integration (success / business outcome / guardrail block, run for real against `app/server.py`).
+14 tests covering safety guardrails, artifact schema validation, and live replay (success, business-outcome, and guardrail-block cases, all run for real against `app/server.py`).
 
 ## Repository layout
 
@@ -103,7 +109,8 @@ tests/                     pytest suite
 REPORT.md                  design write-up
 ```
 
-## What's real vs. mocked
+## What's actually real here
 
-- **Real:** the target app, the artifact schema, deterministic replay (including its full error taxonomy against a live app), safety guardrails, the escalation control-transfer mechanism (verified two-process handoff over CDP), and the LLM-driven discovery loop itself - a real Gemini 2.5 Flash session completed the `lookup_savings_balance` goal end-to-end against the live app; see `evidence/README.md`.
-- **Deliberately mocked:** the operator console UI is a bare CLI (per the assignment's explicit scope note in Section 3.6) - the pause/cede/resume mechanism underneath it is real.
+The target app, the artifact schema, deterministic replay (full error taxonomy, run against a live app, not stubbed), the safety guardrails, and the escalation mechanism are all real — the pause/cede/resume handoff is a verified two-process transfer over CDP, not a mock. Discovery itself is also real: a Gemini 2.5 Flash session completed `lookup_savings_balance` end-to-end against the live app (see `evidence/README.md` for the trace).
+
+The one deliberately mocked piece is the operator console UI — it's a bare CLI, per the scope note in Section 3.6 of the assignment. The mechanism underneath it isn't mocked, just the interface.
