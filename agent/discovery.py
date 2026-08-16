@@ -18,7 +18,7 @@ from playwright.sync_api import sync_playwright
 
 from agent.llm_client import LLMClient
 from agent.perception import observe
-from agent.safety import AllowlistPolicy, SafetyGate, GuardrailViolation, classify_risk
+from agent.safety import AllowlistPolicy, SafetyGate, GuardrailViolation, classify_risk, redact_log_entry
 from agent.schema import (
     Capability, Step, Locator, LocatorKind, ActionType, RiskLevel, Checkpoint, Outcome,
     InputParam, OutputField,
@@ -38,7 +38,7 @@ ARTIFACTS_DIR = ROOT / "artifacts"
 def _log(run_dir: Path, entry: dict):
     entry["ts"] = datetime.now(timezone.utc).isoformat()
     with open(run_dir / "log.jsonl", "a") as f:
-        f.write(json.dumps(entry) + "\n")
+        f.write(json.dumps(redact_log_entry(entry)) + "\n")
 
 
 def _resolve(page, role: str, name: str):

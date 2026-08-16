@@ -39,7 +39,7 @@ from typing import Any, Literal, Optional
 from playwright.sync_api import sync_playwright, Page, TimeoutError as PWTimeout
 
 from agent.schema import Capability, Step, ActionType, RiskLevel, LocatorKind
-from agent.safety import AllowlistPolicy, SafetyGate, GuardrailViolation, redact_dict
+from agent.safety import AllowlistPolicy, SafetyGate, GuardrailViolation, redact_log_entry
 
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE_DIR = ROOT / "evidence"
@@ -120,7 +120,7 @@ def replay(
     def _log(entry: dict):
         entry["ts"] = datetime.now(timezone.utc).isoformat()
         with open(run_dir / "log.jsonl", "a") as f:
-            f.write(json.dumps(redact_dict(entry) if False else entry) + "\n")  # entries here are structural, not raw PII
+            f.write(json.dumps(redact_log_entry(entry)) + "\n")
 
     policy = AllowlistPolicy(**{k: v for k, v in capability.target.items() if k in {"allowed_domains", "allowed_routes"}}) \
         if capability.target.get("allowed_domains") else AllowlistPolicy()

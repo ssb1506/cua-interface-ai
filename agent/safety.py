@@ -68,7 +68,29 @@ def redact(field_name: str, value: str) -> str:
 
 
 def redact_dict(d: dict) -> dict:
+    """Redacts a flat dict of string-ish values by field name. NOTE: this
+    coerces every value through str(), which is correct for a form-params
+    dict (redact("password", 123) is meaningful) but WILL corrupt a
+    structured log entry - ints become strings, nested dicts become their
+    Python repr instead of staying JSON-serializable objects. Use
+    redact_log_entry() instead for anything going into log.jsonl."""
     return {k: redact(k, str(v)) for k, v in d.items()}
+
+
+def redact_log_entry(entry: dict) -> dict:
+    """Redacts a structured log entry (event dicts written to log.jsonl)
+    without corrupting non-string types or nested structure. Only replaces
+    a top-level value with "[REDACTED]" if its key name matches a sensitive
+    pattern and the value is a string; ints, nested dicts/lists, and
+    unmatched fields pass through unchanged so the log stays valid JSON
+    with its original shape."""
+    out = {}
+    for k, v in entry.items():
+        if isinstance(v, str) and any(p.search(k) for p in _SENSITIVE_FIELD_PATTERNS):
+            out[k] = "[REDACTED]"
+        else:
+            out[k] = v
+    return out
 
 
 class GuardrailViolation(Exception):
