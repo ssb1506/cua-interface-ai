@@ -11,4 +11,4 @@
 {"event": "observation", "step": 3, "url": "http://localhost:5055/member/12345", "n_nodes": 17, "ts": "2026-08-16T15:32:28.341880+00:00"}
 {"event": "decision", "step": 3, "decision": {"action": "done", "outcome": "success", "reasoning": "The savings balance has been extracted, and the goal is to look up member 12345 and read their current savings balance. The goal is now complete."}, "ts": "2026-08-16T15:32:29.430486+00:00"}
 {"event": "done", "outcome": "success", "ts": "2026-08-16T15:32:29.431019+00:00"}
-{"event": "artifact_saved", "path": "/Users/shreya/Downloads/cua-project/artifacts/lookup_savings_balance.json", "ts": "2026-08-16T15:32:29.519232+00:00"}
+{"event": "artifact_saved", "path": "artifacts/lookup_savings_balance.json", "ts": "2026-08-16T15:32:29.519232+00:00"}
