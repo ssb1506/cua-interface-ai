@@ -4,6 +4,8 @@ A small, real vertical slice of: goal → LLM-driven discovery against a live UI
 
 ## Setup
 
+The only "live service" this project depends on is the mock target app (`app/server.py`) started below — it's a local Flask app with no external calls or hidden dependencies. Everything except the discovery step (replay, safety tests, escalation demo) runs fully offline against it, no internet or API access needed.
+
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
@@ -88,7 +90,7 @@ PYTHONPATH=. python -m pytest tests/ -v
 app/server.py              mock legacy target application
 agent/schema.py            the Capability artifact contract
 agent/perception.py        accessibility-tree observation layer
-agent/llm_client.py        Anthropic client, forced tool-use action schema
+agent/llm_client.py        Gemini client (default, free tier) with an Anthropic fallback; forced tool/function-call action schema
 agent/discovery.py         LLM-driven observe-decide-act loop -> artifact
 agent/replay.py            deterministic replay engine, no LLM
 agent/safety.py            allowlist, risk classification, redaction
