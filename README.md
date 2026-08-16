@@ -41,7 +41,7 @@ python app/server.py
 
 ### 1. Deterministic replay (works right now, no key needed)
 
-Two reference artifacts are already checked into `/artifacts/`. They were built from a verified manual trace against the live app — `scripts/build_reference_artifacts.py` does the building, and `evidence/README.md` explains why we went that route instead of relying purely on a discovery run.
+`open_subaccount.json` was built from a verified manual trace against the live app — `scripts/build_reference_artifacts.py` does the building. `lookup_savings_balance.json` started the same way but has since been overwritten by a real Gemini discovery run (see Step 2 below and `evidence/README.md`).
 
 ```bash
 # success
